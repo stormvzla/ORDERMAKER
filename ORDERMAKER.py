@@ -12,9 +12,13 @@ def gerar_orcamento():
         # Obtém o valor total desejado da interface gráfica
         valor_total = float(entry_valor.get())
         
+        # Verifica se um arquivo CSV foi selecionado
+        if not csv_path:
+            messagebox.showerror("Erro", "Nenhum arquivo CSV selecionado.")
+            return
+        
         # Converte a tabela para um DataFrame do pandas
-        # O arquivo CSV usa ";" como delimitador e tem um cabeçalho na segunda linha
-        df = pd.read_csv("c:/pasta/produtos.csv", delimiter=";", skiprows=1, encoding='latin1')
+        df = pd.read_csv(csv_path, delimiter=";", skiprows=1, encoding='latin1')
         
         # Renomeia as colunas para facilitar o acesso
         df.columns = ['Descrição', 'Código', 'Unidade', 'Preço']
@@ -138,14 +142,31 @@ def gerar_orcamento():
     except Exception as e:
         messagebox.showerror("Erro", f"Ocorreu um erro: {e}")
 
+# Função para selecionar o arquivo CSV
+def selecionar_csv():
+    global csv_path
+    csv_path = filedialog.askopenfilename(filetypes=[("Arquivos CSV", "*.csv")])
+    if csv_path:
+        label_csv.config(text=f"Arquivo selecionado: {csv_path}")
+
 # Cria a interface gráfica
 root = tk.Tk()
 root.title("Gerador de Orçamento")
-root.geometry("400x200")
+root.geometry("500x250")
 
 # Define um tema moderno
 style = ttk.Style()
 style.theme_use("clam")
+
+# Frame para seleção do arquivo CSV
+frame_csv = ttk.Frame(root)
+frame_csv.pack(pady=10)
+
+label_csv = ttk.Label(frame_csv, text="Nenhum arquivo CSV selecionado.")
+label_csv.pack(side=tk.LEFT, padx=5)
+
+button_csv = ttk.Button(frame_csv, text="Selecionar CSV", command=selecionar_csv)
+button_csv.pack(side=tk.LEFT)
 
 # Label e Entry para o valor total
 label_valor = ttk.Label(root, text="Digite o valor total desejado para o orçamento: R$")
